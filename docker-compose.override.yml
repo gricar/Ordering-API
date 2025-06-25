@@ -1,0 +1,77 @@
+services:
+  messagebroker:
+    container_name: ordering-messagebroker
+    #hostname: messagebroker
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fasttechfoods-network
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  ordering.db:
+    hostname: ordering-db
+    container_name: ordering-db
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2.0"
+    #       memory: "1G"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=TC5HackathonFIAP
+      - MSSQL_PID=Express
+    # healthcheck:
+    #   test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S mssql -U sa -P TC5HackathonFIAP -Q 'SELECT 1' -C"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    restart: always
+    ports:
+      - "1433:1433"
+    networks:
+      - fasttechfoods-network
+    volumes:
+      - sql-data:/var/opt/mssql
+
+  ordering.api:
+    container_name: ordering-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=Server=ordering.db;Database=FastTechFoods;User Id=sa;Password=TC5HackathonFIAP;Encrypt=False;TrustServerCertificate=True
+      - MessageBroker__Host=messagebroker
+      - MessageBroker__UserName=guest
+      - MessageBroker__Password=guest
+    depends_on:
+      messagebroker:
+        condition: service_healthy
+      # ordering.db:
+      #   condition: service_healthy
+    ports:
+      - "6003:8080"
+      - "6063:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - fasttechfoods-network
+
+networks:
+  fasttechfoods-network:
+    driver: bridge
+
+volumes:
+  sql-data:
+    
