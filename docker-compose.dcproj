@@ -16,7 +16,4 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="init-db\" />
-  </ItemGroup>
 </Project>
