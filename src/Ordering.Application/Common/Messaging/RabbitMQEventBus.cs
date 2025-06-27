@@ -72,6 +72,8 @@ public class RabbitMQEventBus : IEventBus
 
                 if (integrationEvent != null)
                 {
+                    _logger.LogInformation("Message received on queue {QueueName}: {Message}", queueName, message);
+
                     // Resolve o handler do container de DI
                     // Usando CreateScope para garantir que dependências injetadas no handler
                     // sejam resolvidas para esta requisição/mensagem e descartadas corretamente.
@@ -93,14 +95,14 @@ public class RabbitMQEventBus : IEventBus
                 {
                     _logger.LogError("Failed to deserialize message to type {EventType} from queue {QueueName}. Message: {Message}", typeof(T).Name, queueName, message);
                     // Nack a mensagem para que ela seja reprocessada ou movida para DLQ (Dead Letter Queue)
-                    _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true); // requeue: true pode causar loop infinito se o erro for na desserialização
+                    // _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true); // requeue: true pode causar loop infinito se o erro for na desserialização
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing message from queue {QueueName}. Message: {Message}", queueName, message);
                 // Nack a mensagem em caso de erro, com re-fila (requeue: true) ou para DLQ (requeue: false)
-                _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true); // Considere 'requeue: false' e configurar uma DLQ para erros persistentes
+                // _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true); // Considere 'requeue: false' e configurar uma DLQ para erros persistentes
             }
         };
 

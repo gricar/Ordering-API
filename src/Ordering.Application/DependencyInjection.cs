@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Behaviors;
 using Ordering.Application.Common.Messaging;
+using Ordering.Application.Orders.EventHandlers.Integration;
 using System.Reflection;
 
 namespace Ordering.Application;
@@ -26,6 +27,8 @@ public static class DependencyInjection
             var connectionName = configuration["MessageBroker:ConnectionName"]!;
             return new RabbitMQEventBus(uri, connectionName, logger, sp);
         });
+
+        services.AddTransient<OrderAcceptedEventHandler>();
 
         return services;
     }

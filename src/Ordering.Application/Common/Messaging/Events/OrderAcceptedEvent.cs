@@ -1,5 +1,5 @@
-﻿using Ordering.Domain.Entities;
+﻿using Ordering.Application.Orders.DTOs;
 
 namespace Ordering.Application.Common.Messaging.Events;
 
-public record OrderAcceptedEvent(Order order) : IntegrationEvent;
+public record OrderAcceptedEvent(OrderDto order) : IntegrationEvent;

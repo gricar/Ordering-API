@@ -19,10 +19,10 @@ namespace Ordering.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Guid), Status201Created)]
         [ProducesResponseType(Status400BadRequest)]
-        public async Task<ActionResult<Guid>> PostContact([FromBody] CreateOrderCommand command)
+        public async Task<ActionResult<Guid>> CreateOrder([FromBody] CreateOrderCommand command)
         {
             var response = await _dispatcher.Send(command);
-            return CreatedAtAction(nameof(PostContact), response);
+            return CreatedAtAction(nameof(CreateOrder), response);
         }
     }
 }

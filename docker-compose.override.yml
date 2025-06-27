@@ -49,12 +49,11 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__Database=Server=ordering.db;Database=FastTechFoods;User Id=sa;Password=TC5HackathonFIAP;Encrypt=False;TrustServerCertificate=True
-      - MessageBroker__Host=messagebroker
-      - MessageBroker__UserName=guest
-      - MessageBroker__Password=guest
-    depends_on:
-      messagebroker:
-        condition: service_healthy
+      - ConnectionStrings__RabbitMq=amqp://messagebroker:5672
+      - MessageBroker__ConnectionName=Ordering.API
+    # depends_on:
+    #   messagebroker:
+    #     condition: service_healthy
       # ordering.db:
       #   condition: service_healthy
     ports:

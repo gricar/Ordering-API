@@ -15,8 +15,6 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<CustomExceptionHandler>();
 
-        //services.AddHealthChecks().AddSqlServer(configuration.GetConnectionString("Database")!);
-
         return services;
     }
 
@@ -24,7 +22,7 @@ public static class DependencyInjection
     {
         var eventBus = app.Services.GetRequiredService<IEventBus>();
 
-        eventBus.SubscribeAsync<OrderAcceptedEvent, OrderAcceptedEventHandler>("order_status_queue");
+        eventBus.SubscribeAsync<OrderAcceptedEvent, OrderAcceptedEventHandler>("order-accepted");
 
         if (app.Environment.IsDevelopment())
         {
@@ -39,12 +37,6 @@ public static class DependencyInjection
         app.UseExceptionHandler(options => { });
 
         app.MapControllers();
-
-        //app.UseHealthChecks("/health",
-        //   new HealthCheckOptions
-        //   {
-        //       ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        //   });
 
         return app;
     }
