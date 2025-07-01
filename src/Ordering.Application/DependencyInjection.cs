@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Behaviors;
 using Ordering.Application.Common.Messaging;
-using Ordering.Application.Orders.EventHandlers.Integration;
+using Ordering.Application.Extensions;
 using System.Reflection;
 
 namespace Ordering.Application;
@@ -28,7 +28,7 @@ public static class DependencyInjection
             return new RabbitMQEventBus(uri, connectionName, logger, sp);
         });
 
-        services.AddTransient<OrderAcceptedEventHandler>();
+        services.AddIntegrationEventHandlers(Assembly.GetExecutingAssembly());
 
         return services;
     }

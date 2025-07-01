@@ -81,8 +81,8 @@ public class RabbitMQEventBus : IEventBus
                     {
                         var handler = scope.ServiceProvider.GetRequiredService<TH>();
 
-                        _logger.LogInformation("Handling event '{EventType}' from queue '{QueueName}'. Message: {Message}",
-                            typeof(T).Name, queueName, message);
+                        //_logger.LogInformation("Handling event '{EventType}' from queue '{QueueName}'. Message: {Message}",
+                        //    typeof(T).Name, queueName, message);
 
                         await handler.Handle(integrationEvent);
                     }
