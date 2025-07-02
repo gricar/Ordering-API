@@ -2,4 +2,4 @@
 
 namespace Ordering.Application.Common.Messaging.Events;
 
-public record OrderAcceptedEvent(OrderDto order) : IntegrationEvent;
+public record OrderAcceptedEvent(OrderDto Order) : IntegrationEvent;

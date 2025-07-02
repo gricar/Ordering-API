@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Data;
 using Ordering.Application.Exceptions;
@@ -12,14 +13,9 @@ public sealed class UpdateOrderCommandHandler(
 {
     public async Task<Unit> Handle(UpdateOrderStatusCommand command, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Updating order {OrderId} status to {Status}.", command.OrderId, command.Status);
-
-        var orderId = OrderId.Of(command.OrderId);
-
-        var order = await dbContext.Orders.FindAsync(orderId, cancellationToken);
-        //var order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id.Value == command.OrderId, cancellationToken);
-
-        logger.LogInformation("Found order {OrderId} with status {Status}.", order?.Id, order?.Status);
+        var order = await dbContext.Orders
+            .Include(o => o.OrderItems)
+            .FirstOrDefaultAsync(o => o.Id == OrderId.Of(command.OrderId), cancellationToken);
 
         if (order is null)
         {
@@ -27,11 +23,12 @@ public sealed class UpdateOrderCommandHandler(
         }
 
         order.Update(command.Status);
-        //atualizar apenas status no DB --> verificar
-        dbContext.Orders.Update(order);
+
+        // O EF Core detecta as mudanças na entidade 'order' e gera o SQL de UPDATE.
+        //dbContext.Orders.Update(order);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Order {OrderId} status updated to {Status}.", command.OrderId, command.Status);
+        logger.LogInformation("Order {OrderId} status updated to {Status}.", order.Id, order.Status);
 
         return Unit.Value;
     }
