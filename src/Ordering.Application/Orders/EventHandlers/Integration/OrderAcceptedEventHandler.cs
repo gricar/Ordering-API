@@ -15,9 +15,9 @@ public class OrderAcceptedEventHandler(
     {
         logger.LogInformation("Integration Event handled: {IntegrationEvent}", @event.EventType);
 
-        logger.LogInformation("Order {OrderId} was accepted by Kitchen.", @event.Order.OrderId);
+        logger.LogInformation("Order {OrderId} was accepted by Kitchen MS.", @event.Order.Id);
 
-        await sender.Send(new UpdateOrderStatusCommand(@event.Order.OrderId, OrderStatus.Preparing));
+        await sender.Send(new UpdateOrderStatusCommand(@event.Order.Id, OrderStatus.Preparing));
 
         await Task.CompletedTask;
     }

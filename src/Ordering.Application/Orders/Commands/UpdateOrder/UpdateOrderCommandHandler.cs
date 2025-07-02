@@ -15,11 +15,11 @@ public sealed class UpdateOrderCommandHandler(
     {
         var order = await dbContext.Orders
             .Include(o => o.OrderItems)
-            .FirstOrDefaultAsync(o => o.Id == OrderId.Of(command.OrderId), cancellationToken);
+            .FirstOrDefaultAsync(o => o.Id == OrderId.Of(command.Id), cancellationToken);
 
         if (order is null)
         {
-            throw new OrderNotFoundException(command.OrderId);
+            throw new OrderNotFoundException(command.Id);
         }
 
         order.Update(command.Status);
