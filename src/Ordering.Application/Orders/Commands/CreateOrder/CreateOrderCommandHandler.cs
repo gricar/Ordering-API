@@ -17,34 +17,34 @@ public sealed class CreateOrderCommandHandler(
 {
     public async Task<Guid> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
-        var newOrder = Order.Create(
+        var order = Order.Create(
             OrderId.Of(Guid.NewGuid()),
             CustomerId.Of(command.CustomerId)
         );
 
         foreach (var item in command.OrderItems)
         {
-            newOrder.Add(
+            order.Add(
                 ProductId.Of(item.ProductId),
                 item.Quantity,
                 item.Price
             );
         }
 
-        dbContext.Orders.Add(newOrder);
+        dbContext.Orders.Add(order);
         await dbContext.SaveChangesAsync(cancellationToken);
-        logger.LogInformation("Order saved in database: {id}", newOrder.Id);
+        logger.LogInformation("Order saved in database: {id}", order.Id);
 
         var orderDto = new OrderDto(
-            newOrder.Id.Value,
-            newOrder.CustomerId.Value,
-            newOrder.OrderItems.Select(x => new OrderItemDto(newOrder.Id.Value, x.ProductId.Value, x.Quantity, x.Price)).ToList(),
-            newOrder.TotalPrice);
+            order.Id.Value,
+            order.CustomerId.Value,
+            order.OrderItems.Select(x => new OrderItemDto(order.Id.Value, x.ProductId.Value, x.Quantity, x.Price)).ToList(),
+            order.TotalPrice);
 
         var orderEvent = new OrderCreatedEvent(orderDto);
 
         await eventBus.PublishAsync(orderEvent, "order-created");
 
-        return newOrder.Id.Value;
+        return order.Id.Value;
     }
 }
