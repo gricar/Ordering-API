@@ -6,7 +6,6 @@ public sealed record OrderDto(
     List<OrderItemDto> OrderItems,
     decimal TotalPrice);
 
-
 public sealed record OrderItemDto(
     Guid OrderId,
     Guid ProductId,
