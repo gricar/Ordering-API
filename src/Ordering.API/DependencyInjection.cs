@@ -1,7 +1,10 @@
-﻿using Ordering.API.Exceptions;
+﻿using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Ordering.API.Exceptions;
 using Ordering.Application.Common.Messaging;
 using Ordering.Application.Common.Messaging.Events;
 using Ordering.Application.Orders.EventHandlers.Integration;
+using Prometheus;
 
 namespace Ordering.API;
 
@@ -36,7 +39,16 @@ public static class DependencyInjection
 
         app.UseExceptionHandler(options => { });
 
+        app.UseMetricServer();
+
+        app.UseHttpMetrics();
+
         app.MapControllers();
+
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
 
         return app;
     }
