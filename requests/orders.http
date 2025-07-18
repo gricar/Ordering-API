@@ -1,0 +1,43 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@environment kubernetes
+
+# Health
+GET {{HostAddress}}/health
+
+###
+
+
+# Create a new order
+POST {{HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+    "customerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "orderItems": [
+      {
+        "productId": "c67d6323-e8b1-4bdf-9a75-b0d0d2e7e914",
+        "quantity": 1,
+        "price": 32
+      },
+      {
+        "productId": "6ec1297b-ec0a-4aa1-be25-6726e3b51a27",
+        "quantity": 1,
+        "price": 8
+      }
+    ]
+}
+
+###
+
+
+# Cancel one order
+@OrderId=c9a118dd-b4f2-446f-b67f-cf967f707029
+PUT {{HostAddress}}/api/orders/{{OrderId}}/cancel
+Content-Type: application/json
+{
+  "orderId": "c9a118dd-b4f2-446f-b67f-cf967f707029",
+  "justification": "Too late"
+}
+
+###
