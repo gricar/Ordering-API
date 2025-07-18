@@ -26,6 +26,7 @@ public static class DependencyInjection
         var eventBus = app.Services.GetRequiredService<IEventBus>();
 
         eventBus.SubscribeAsync<OrderAcceptedEvent, OrderAcceptedEventHandler>("order-accepted");
+        eventBus.SubscribeAsync<OrderRejectedEvent, OrderRejectedEventHandler>("order-rejected");
 
         if (app.Environment.IsDevelopment())
         {
