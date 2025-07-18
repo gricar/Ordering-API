@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ordering-config
+data:
+  AppEnv: "Development"
+  dbConnString: "Server=mssql-svc;Database=FastTechFoods;User Id=sa;Password=TC5HackathonFIAP!2025#;Encrypt=False;TrustServerCertificate=True"
+  rabbitConnString: "amqp://rabbitmq-svc:5672"

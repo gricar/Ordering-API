@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordering-api
+  labels:
+    app: fastTechFoods
+    service: ordering-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastTechFoods
+      service: ordering-api
+  template:
+    metadata:
+      labels:
+        app: fastTechFoods
+        service: ordering-api
+    spec:
+      containers:
+        - name: fasttechfoods-ordering-api
+          image: gricardo10/fasttechfoods-ordering-api
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: ordering-config
+                  key: AppEnv
+            - name: ConnectionStrings__Database
+              valueFrom:
+                configMapKeyRef:
+                  name: ordering-config
+                  key: dbConnString
+            - name: ConnectionStrings__RabbitMq
+              valueFrom:
+                configMapKeyRef:
+                  name: ordering-config
+                  key: rabbitConnString
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
