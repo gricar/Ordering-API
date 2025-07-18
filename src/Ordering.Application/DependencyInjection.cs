@@ -24,11 +24,15 @@ public static class DependencyInjection
         {
             var logger = sp.GetRequiredService<ILogger<RabbitMQEventBus>>();
             var uri = configuration.GetConnectionString("RabbitMq")!;
-            var connectionName = configuration["MessageBroker:ConnectionName"]!;
+            var connectionName = configuration["MessageBroker:ConnectionName"] ?? "Ordering.API";
             return new RabbitMQEventBus(uri, connectionName, logger, sp);
         });
 
         services.AddIntegrationEventHandlers(Assembly.GetExecutingAssembly());
+
+        services.AddHealthChecks()
+            .AddSqlServer(configuration.GetConnectionString("Database")!, name: "SQL Server")
+            .AddRabbitMQ(configuration.GetConnectionString("RabbitMQ")!, name: "RabbitMQ");
 
         return services;
     }
