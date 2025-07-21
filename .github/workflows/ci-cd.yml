@@ -1,0 +1,47 @@
+name: CI/CD Pipeline - Ordering API
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Build Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/fasttechfoods-ordering-api:latest -f ./src/Ordering.API/Dockerfile .
+    
+    - name: Push Docker Image
+      run: |
+        echo "${{ secrets.DOCKER_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        docker push ${{ secrets.DOCKER_USERNAME }}/fasttechfoods-ordering-api:latest
+
+    - name: Setup Kubectl
+      uses: azure/k8s-set-context@v1
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.AKS_KUBE_CONFIG }}
+        version: 1.21.0
+
+    - name: Deploy to AKS
+      run: |
+        kubectl apply -f ./k8s
