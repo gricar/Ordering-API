@@ -1,4 +1,4 @@
-# FastTech Foods Ordering API
+# FastTech Foods MS - Ordering API
 
 ### Descrição
 > É uma aplicação em arquitetura de microsserviço, utilizando o Kubernetes para gerenciamento de conteinerização, orquestração e escalabilidade.
